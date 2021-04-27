@@ -1,3 +1,4 @@
+## .. indicates the work directory
 ########LOAD PACKAGES################
 args<- as.numeric(commandArgs(TRUE))
 library(mvtnorm)
@@ -15,7 +16,7 @@ library(ggplot2)
 library(readr)
 library(dplyr)
 library(cause) 
-sourceCpp("./funs.cpp")
+sourceCpp("../funs.cpp")
 
 ##set simulation parameters
 sigma <- args[1]
@@ -38,15 +39,15 @@ n2<-30000
 omega_matrix<-matrix(c(1,rho,rho,1),ncol=2,nrow=2)
 
 ##import genotype matirx
-sample <- read.plink("Kaiser_chr1_1.bed","Kaiser_chr1_1.bim", "Kaiser_chr1_1.fam")
+sample <- read.plink("../Kaiser_chr1_1.bed","../Kaiser_chr1_1.bim", "../Kaiser_chr1_1.fam")
 gen1 <- as(sample$genotypes, "numeric")
 gen1=-gen1+2
-sample <- read.plink("Kaiser_chr1_2.bed", "Kaiser_chr1_2.bim", "Kaiser_chr1_2.fam")
+sample <- read.plink("../Kaiser_chr1_2.bed", "../Kaiser_chr1_2.bim", "../Kaiser_chr1_2.fam")
 gen2 <- as(sample$genotypes, "numeric")
 gen2=-gen2+2
 
 ##simulate summary statitics
-load("Kaiser_chr_1_total.bim.Rdata")
+load("../Kaiser_chr_1_total.bim.Rdata")
 pos <- bimfile[,4]/1e6
 B <- as.matrix(cbind(rnorm(num.snp,0,sqrt(sigma_beta_true)),rnorm(num.snp,0,sqrt(sigma_gamma_true))))
 C <- matrix(1,length(pos),2)
@@ -67,16 +68,16 @@ rm(B,C,beta_exp1,beta_exp2,eu,ex,ey,betax,betay,sex,sey,px,name)
 zx <- betax/sex
 zy <- betay/sey
 Z <- cbind(zy,zx)
-load("Kaiser_chr_1_total.l2.ldscore.Rdata")
+load("../Kaiser_chr_1_total.l2.ldscore.Rdata")
 two_study=T;coreNum = 1
 OMR_out <- omr(n1,n2,num.per,l.j,Z,coreNum)
 
 ##SNP clumping 
 clump <- data.frame("SNP"=bimfile$V2,"P"=px)
-clump_name <- paste0("z_two_sigma",sigma_beta_index[sigma],"_gamma",sigma_gamma_index[gamma],"_rho",rho,"_alpha",alpha_true,"_",s,".txt")
+clump_name <- paste0("../z_two_sigma",sigma_beta_index[sigma],"_gamma",sigma_gamma_index[gamma],"_rho",rho,"_alpha",alpha_true,".txt")
 fwrite(clump,file=clump_name, quote=F,sep=" ")
-out_name <- paste0("z_two_sigma",sigma_beta_index[sigma],"_gamma",sigma_gamma_index[gamma],"_rho",rho,"_alpha",alpha_true,"_",s)
-cmd <- paste0("./plink --bfile Kaiser_chr_1_total --allow-no-sex --clump ",clump_name," --clump-p1 5e-08 --clump-r2 0.1 --clump-kb 10000 --out ",out_name)
+out_name <- paste0("../z_two_sigma",sigma_beta_index[sigma],"_gamma",sigma_gamma_index[gamma],"_rho",rho,"_alpha",alpha_true)
+cmd <- paste0("../plink --bfile ../Kaiser_chr_1_total --allow-no-sex --clump ",clump_name," --clump-p1 5e-08 --clump-r2 0.1 --clump-kb 10000 --out ",out_name)
 system(cmd)
 system(paste0("rm -f ",clump_name))
 
@@ -106,8 +107,8 @@ X <- new_cause_data(X)
 set.seed(100)
 varlist <- with(X, sample(snp, size=300000, replace=FALSE))
 params <- est_cause_params(X, varlist)
-ld <- readRDS("LD/chr1_AF0.05_0.1.RDS")
-snp_info <- readRDS("LD/chr1_AF0.05_snpdata.RDS")
+ld <- readRDS("../LD/chr1_AF0.05_0.1.RDS")
+snp_info <- readRDS("../LD/chr1_AF0.05_snpdata.RDS")
 variants <- X %>% mutate(pval1 = 2*pnorm(abs(beta_hat_1/seb1), lower.tail=FALSE))
 variants$snp <- as.character(variants$snp)
 pruned <- ld_prune(variants = variants, 
