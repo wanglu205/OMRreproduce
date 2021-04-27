@@ -46,7 +46,7 @@ gen2 <- as(sample$genotypes, "numeric")
 gen2=-gen2+2
 
 ##simulate summary statitics
-load("/net/mulan/home/walu/Kaiser/data/Kaiser_chr_1_total.bim.Rdata")
+load("Kaiser_chr_1_total.bim.Rdata")
 pos <- bimfile[,4]/1e6
 B <- as.matrix(cbind(rnorm(num.snp,0,sqrt(sigma_beta_true)),rnorm(num.snp,0,sqrt(sigma_gamma_true))))
 C <- matrix(1,length(pos),2)
@@ -67,7 +67,7 @@ rm(B,C,beta_exp1,beta_exp2,eu,ex,ey,betax,betay,sex,sey,px,name)
 zx <- betax/sex
 zy <- betay/sey
 Z <- cbind(zy,zx)
-load("/net/mulan/home/walu/Kaiser/data/Kaiser_chr_1_total.l2.ldscore.Rdata")
+load("Kaiser_chr_1_total.l2.ldscore.Rdata")
 two_study=T;coreNum = 1
 OMR_out <- omr(n1,n2,num.per,l.j,Z,coreNum)
 
