@@ -31,14 +31,14 @@ pos_hg18_to_hg19$bp<-pos_hg18_to_hg19$start
 bim_all<-fread("../eur_chr_all.bim")
 colnames(bim_all)<-c("chr","rsid_1000","sex","bp","A1_1000","A2_1000")
 
-merged_file<-merge(pos_hg18_to_hg19, bim_all, by.x = c("chr", "bp"), by.y = c("chr", "bp"))#611132 SNP
+merged_file<-merge(pos_hg18_to_hg19, bim_all, by.x = c("chr", "bp"), by.y = c("chr", "bp"))
 
 asthma <- fread("../TAGC_Multiancestry_and_European-Ancestry_Meta-analyses_Results.tsv")
 colnames(asthma)[3] <- "bp"
 asthma$chr <- as.character(asthma$chr)
 merged_file_all <- merge(asthma, merged_file, by.x = c("chr", "bp"), by.y = c("chr", "bp"))
 
-merged_file_MHC<-merged_file_all[!(merged_file_all$chr==6&merged_file_all$bp>2*10^7&merged_file_all$bp<3*10^7),]#610651 SNP
+merged_file_MHC<-merged_file_all[!(merged_file_all$chr==6&merged_file_all$bp>28477797&merged_file_all$bp<33448354),]
 
 for(chr_num in 1:22){  
   merged_file_MHC_subset<-merged_file_MHC$rsid_1000[merged_file_MHC$chr==chr_num]
@@ -158,7 +158,6 @@ n2 <- round(mean(Z1$N))
 n1 <- round(mean(Z2$N))
 num.per <- 503
 num.snp <- nrow(Z)
-two_study=T
 numCore = 25
 OMR_out <- omr(n1,n2,num.per,l.j,Z,coreNum)
 ##SNP clumping 
@@ -231,7 +230,7 @@ MRres$OMR_P = OMR_out$pvalue
 MRres$IVW_est = IVW$Estimate
 MRres$IVW_sd = IVW$StdError
 MRres$IVW_p = IVW$Pvalue
-res$egger_est = egger$Estimate
+MRres$egger_est = egger$Estimate
 MRres$egger_sd = egger$StdError.Est
 MRres$egg_p = egger$Pvalue.Est
 MRres$mix_est = est$theta
